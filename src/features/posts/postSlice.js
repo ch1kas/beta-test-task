@@ -1,13 +1,17 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  posts: [],
+  value: [],
 };
 
 export const postsSlice = createSlice({
   name: "posts",
   initialState,
-  reducers: {},
+  reducers: {
+    addToLoadedPosts: (state, action) => {
+      state.value = [...action.payload];
+    },
+  },
 });
 
 // Action creators are generated for each case reducer function

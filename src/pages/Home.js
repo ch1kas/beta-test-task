@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import Post from "../components/Post";
 import SearchBar from "../components/SearchBar";
 import { Oval } from "react-loader-spinner";
+import { useSelector, useDispatch } from "react-redux";
+import { addToLoadedPosts } from "../features/posts/postSlice";
 
 const Home = () => {
   const [blog, setBlog] = useState([]);
@@ -10,6 +12,8 @@ const Home = () => {
   const [isError, setIsError] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [isEnd, setIsEnd] = useState(false);
+  const posts = useSelector((state) => state.posts.value);
+  const dispatch = useDispatch();
 
   const getArticles = async () => {
     try {
@@ -19,6 +23,7 @@ const Home = () => {
       );
       const data = await res.data;
       setBlog(data);
+      console.log(posts);
       setIsLoading(false);
     } catch (error) {
       console.error(error);
@@ -49,13 +54,16 @@ const Home = () => {
   };
 
   useEffect(() => {
-    console.log(currentPage);
     addLoadMore();
   }, [currentPage]);
 
   useEffect(() => {
     getArticles();
   }, []);
+
+  useEffect(() => {
+    dispatch(addToLoadedPosts(blog));
+  }, [blog]);
 
   return (
     <>
@@ -78,10 +86,10 @@ const Home = () => {
         {isError && (
           <p className="text-base text-red-700">Data couldn't be downloaded</p>
         )}
-        {!isError && !isLoading && blog.length === 0 ? (
+        {!isError && !isLoading && posts.length === 0 ? (
           <p>No results found</p>
         ) : (
-          blog?.map((post, idx) => (
+          posts?.map((post, idx) => (
             <Post
               key={idx}
               id={post.id}
